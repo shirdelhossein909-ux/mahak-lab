@@ -1,0 +1,1 @@
+{"careless": {"overall": 27.5, "grade": "ضعیف", "passed": 10, "tests": 30, "critical_failures": 6, "ceiling": 1}, "careful": {"overall": 85.8, "grade": "عالی", "passed": 25, "tests": 30, "critical_failures": 0, "ceiling": 1}}
