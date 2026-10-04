@@ -24,6 +24,12 @@ export function h(tag, props = {}, ...kids) {
   return el;
 }
 
+/** Replace an element's children; like h(), it accepts nested arrays and skips null. */
+export function fill(el, ...kids) {
+  el.replaceChildren(...kids.flat(Infinity).filter((k) => k != null && k !== false));
+  return el;
+}
+
 // ------------------------------------------------------------------ theme
 
 const THEME_KEY = "mahak-theme";
@@ -249,8 +255,8 @@ export class Board {
   async replay(res) {
     const card = this.open(res);
     for (const msg of res.runs[0].transcript) {
-      await this.say(card, msg, 260);
-      if (!this.fast) await sleep(msg.role === "user" ? 170 : 110);
+      await this.say(card, msg, 190);
+      if (!this.fast) await sleep(msg.role === "user" ? 120 : 70);
     }
     this.close(card, res);
   }

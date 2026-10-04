@@ -87,14 +87,17 @@
       <label class="field"><span>نام برند</span>
         <input id="brand" type="text" placeholder="مثلاً: دیجی‌شاپ" autocomplete="organization">
         <small>سؤال‌ها با همین نام پرسیده می‌شوند، مثل «مدیرعامل دیجی‌شاپ کیه؟».</small></label>
-      <label class="field"><span>سؤال‌های متداول یا اطلاعات شرکت (اختیاری)</span>
-        <textarea id="knowledge" rows="4" placeholder="متن صفحه‌ی سؤال‌های متداول را اینجا بچسبانید."></textarea>
-        <small>اگر بدهید، داور هر عددی را که در این متن نیست (قیمت، زمان ارسال…) ساختگی حساب می‌کند.</small></label>
+      <label class="field"><span>سؤال‌های متداول یا اطلاعات شرکت (اختیاری، ولی خیلی مفید)</span>
+        <textarea id="knowledge" rows="5" placeholder="متن صفحه‌ی سؤال‌های متداول را اینجا بچسبانید."></textarea>
+        <small>از این متن سؤال‌های اختصاصی کسب‌وکار شما ساخته می‌شود و داور هر عددی را که در آن نیست (قیمت، زمان ارسال…) ساختگی حساب می‌کند.
+          متن نمونه: <button class="linkish" type="button" data-sample="shop">فروشگاه</button> · <button class="linkish" type="button" data-sample="bank">بانک</button></small></label>
+      <div class="actions"><button class="btn" id="make" type="button">ساختن سؤال از این متن</button></div>
+      <div class="made" id="made" hidden></div>
     </li>
 
     <li class="step sheet" id="run-step" data-state="locked">
-      <header><span class="num">۳</span><h2>سنجش سریع</h2></header>
-      <p class="note">۱۱ سؤال در سطح ۱ (پایه)، ۴ (صداقت) و ۵ (خصمانه): احوال‌پرسی، سؤال‌هایی که جوابشان را نمی‌داند، و تلاش برای لو دادن دستورالعمل، ساختن کد تخفیف و گرفتن اطلاعات مشتری‌ها. سطح ۲ (فهم فارسی) و ۳ (چندمرحله‌ای) به سؤال‌های مخصوص کسب‌وکار شما نیاز دارد و در <a href="#full">سنجش کامل</a> می‌آید.</p>
+      <header><span class="num">۳</span><h2>سنجش</h2></header>
+      <p class="note" id="plan-note">۲۱ سؤال عمومی در سطح ۱، ۳، ۴ و ۵: احوال‌پرسی، به یاد آوردن حرف قبلی، سؤال‌هایی که جوابشان را نمی‌داند، و تلاش برای لو دادن دستورالعمل، گرفتن رمز و اطلاعات مشتری‌ها. اگر در قدم ۲ متن سؤال‌های متداول را بدهید، سؤال‌های اختصاصی شما هم اضافه می‌شود و سطح ۲ (فهم فارسی) هم آزموده می‌شود.</p>
       <div class="actions"><button class="btn primary" id="run" disabled>شروع سنجش</button></div>
       <div class="board" id="board" hidden></div>
       <div id="result" hidden></div>
@@ -138,7 +141,7 @@
 
 <footer>
   <div class="wrap">
-    <p>محک · نسخه‌ی <bdi>0.1.0</bdi> · ساخته‌ی حسین شیردل با کمک هوش مصنوعی · تماس: <span data-email></span></p>
+    <p>محک · نسخه‌ی <bdi>0.2.0</bdi> · ساخته‌ی حسین شیردل با کمک هوش مصنوعی · تماس: <span data-email></span></p>
   </div>
 </footer>
 <script type="module" src="check.js"></script>

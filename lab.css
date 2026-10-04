@@ -176,6 +176,8 @@ section.block>h2::after{content:"";flex:1;height:1.5px;background:var(--ink);opa
 
 /* report links and how it works */
 .reports{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+#report-cards{display:grid;gap:18px}
+.report-group{display:grid;gap:8px}.report-group h3{font-size:1rem;color:var(--ink-2)}
 .rcard{padding:16px;display:grid;gap:6px;text-decoration:none;color:var(--ink);transition:transform .12s,border-color .12s}
 .rcard:hover{transform:translateY(-2px);border-color:var(--pen)}
 .rcard b{font-size:1.02rem}.rcard .big{font:800 1.8rem/1.3 "Noto Kufi Arabic",Vazirmatn,sans-serif;color:var(--pen)}
@@ -245,6 +247,34 @@ section.block>h2::after{content:"";flex:1;height:1.5px;background:var(--ink);opa
 .qa summary{cursor:pointer;font-weight:700}
 .qa p{margin:8px 0 0;color:var(--ink-2);font-size:.94rem}
 #questions{gap:10px}
+
+/* questions made from the visitor's documents */
+.linkish{font:inherit;color:var(--pen);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+.made{display:grid;gap:8px;border-top:1px solid var(--rule);padding-top:12px}
+.made-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:.9rem}
+.made-list{display:grid;gap:4px;max-height:360px;overflow-y:auto;padding-inline-end:4px}
+.made-row{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:start;padding:6px 8px;border-radius:6px;font-size:.9rem;cursor:pointer}
+.made-row:hover{background:var(--sheet-2)}
+.made-row input{margin-top:6px;accent-color:var(--pen)}
+.made-row small{grid-column:2;color:var(--muted);font-size:.78rem}
+.change{grid-column:1/-1;margin:0;font-size:.92rem}
+
+/* judging the judge */
+.labeler{padding:18px 20px;display:grid;gap:14px}
+.labeler .item{border-inline-start-color:var(--pen)}
+.question{margin:0;font-weight:700;font-size:1.05rem}
+.verdicts .btn{min-width:150px}
+.btn.yes{border-color:var(--up);color:var(--up)}.btn.yes.chosen,.btn.yes:hover{background:var(--up);color:var(--pen-ink)}
+.btn.no{border-color:var(--down);color:var(--down)}.btn.no.chosen,.btn.no:hover{background:var(--down);color:var(--pen-ink)}
+kbd{font:600 .72rem Vazirmatn,sans-serif;border:1px solid currentColor;border-radius:4px;padding:0 5px;opacity:.7}
+.actions.small .btn{min-height:36px;font-size:.88rem}
+.reference{margin:0;font-size:.88rem;color:var(--ink-2);background:var(--sheet-2);border-radius:6px;padding:8px 12px}
+.matrix{grid-column:1/-1;max-width:420px}
+.matrix td{font-weight:800;font-size:1.1rem;text-align:center}
+.matrix th{text-align:center}
+h2.sub{font-size:1.1rem;margin:22px 0 8px}
+#lab-out{display:grid;gap:12px}
+.result .score b{font-size:3rem}
 
 footer{border-top:1px solid var(--rule);margin-top:30px;padding-block:24px 40px;font-size:.86rem;color:var(--muted)}
 footer .wrap{display:grid;gap:6px}

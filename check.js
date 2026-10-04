@@ -2,7 +2,7 @@
 // Python (web/bridge.py) builds every request and judges every answer; this file only
 // carries the requests with fetch, straight from the visitor's browser to their chatbot.
 import {
-  $, $$, Board, ENGINE_ERROR, bootEngine, bubble, fa, h, insight, keepBottom, mailto,
+  $, $$, Board, ENGINE_ERROR, belt, bootEngine, bubble, fa, h, insight, keepBottom, mailto,
   reportLink, resultCard, setEngine, setupTheme, showEmails, typing, verdictCard,
 } from "./common.js";
 
@@ -64,10 +64,66 @@ function readSpec() {
 function setup() {
   const key = JSON.stringify([state.spec, val("#brand"), val("#knowledge")]);
   if (key !== state.setupKey) {
-    state.tests = JSON.parse(py.custom_setup(JSON.stringify(state.spec), val("#brand"), val("#knowledge")));
+    state.setup = JSON.parse(py.custom_setup(JSON.stringify(state.spec), val("#brand"), val("#knowledge")));
     state.setupKey = key;
+    renderMade();
   }
-  return state.tests;
+  return state.setup;
+}
+
+// ------------------------------------------------------------------ step 2: questions made from the documents
+
+const KIND = { typo: "غلط تایپی", colloquial: "محاوره", finglish: "فینگلیش" };
+
+function renderMade() {
+  const box = $("#made");
+  const made = state.setup.made;
+  const originals = made.filter((t) => !t.variant);
+  if (!originals.length) {
+    box.hidden = !val("#knowledge");
+    box.replaceChildren(h("p", { class: "note", text: "از این متن سؤالی ساخته نشد. متن‌هایی که عدد (هزینه، زمان، سقف…) یا جمله‌ی «نداریم/نمی‌شود» دارند بهترین‌اند." }));
+    planNote();
+    return;
+  }
+  const variants = (id) => made.filter((t) => t.variant_of === id).map((t) => KIND[t.variant]);
+  const rows = originals.map((t) => h("label", { class: "made-row" },
+    h("input", { type: "checkbox", value: t.id, checked: true, onchange: planNote }),
+    h("span", {}, h("span", { class: "tag", text: `سطح ${fa(t.level)}` }), " ", t.turns.join(" ← ")),
+    h("small", { text: `منبع: ${t.reference}` + (variants(t.id).length ? ` · با نسخه‌های ${variants(t.id).join("، ")}` : "") })));
+  const all = (on) => {
+    $$("#made input").forEach((c) => (c.checked = on));
+    planNote();
+  };
+  box.replaceChildren(
+    h("div", { class: "made-head" },
+      h("b", { text: `${fa(originals.length)} سؤال از متن شما ساخته شد` }),
+      h("span", { class: "note", text: "بخوانید و هر کدام را که درست نیست بردارید." }),
+      h("button", { class: "linkish", type: "button", text: "همه", onclick: () => all(true) }),
+      h("button", { class: "linkish", type: "button", text: "هیچ‌کدام", onclick: () => all(false) })),
+    h("div", { class: "made-list" }, rows));
+  box.hidden = false;
+  planNote();
+}
+
+const approved = () => $$("#made input:checked").map((c) => c.value);
+
+function planNote() {
+  if (!state.setup) return;
+  const keep = new Set(approved());
+  const made = state.setup.made.filter((t) => keep.has(t.id) || keep.has(t.variant_of));
+  const total = state.setup.general.length + made.length;
+  $("#plan-note").textContent = made.length
+    ? `روی هم ${fa(total)} سؤال: ${fa(state.setup.general.length)} سؤال عمومی (سطح ۱، ۳، ۴ و ۵) و ${fa(made.length)} سؤال از متن خودتان، که چند تایشان با غلط تایپی، محاوره و فینگلیش هم پرسیده می‌شوند (سطح ۱، ۲ و ۳). هر پنج سطح آزموده می‌شود.`
+    : `${fa(total)} سؤال عمومی در سطح ۱، ۳، ۴ و ۵. اگر در قدم ۲ متن سؤال‌های متداول را بدهید، سؤال‌های اختصاصی شما و سطح ۲ (فهم فارسی) هم اضافه می‌شود.`;
+  const calls = [...state.setup.general, ...made].reduce((n, t) => n + t.turns.length, 0);
+  $("#plan-note").append(` چت‌بات شما روی هم ${fa(calls)} پیام جواب می‌دهد.`);
+  $("#run").textContent = `شروع سنجش ${fa(total)} سؤالی`;
+}
+
+let makeTimer = null;
+function scheduleMake() {
+  clearTimeout(makeTimer);
+  makeTimer = setTimeout(() => state.connected && setup(), 500);
 }
 
 // ------------------------------------------------------------------ one call to the chatbot
@@ -166,20 +222,38 @@ function levelLine(s) {
   return Object.entries(s.levels).map(([lv, d]) => `سطح ${fa(lv)}: ${fa(d.passed)} از ${fa(d.n)}`).join(" · ");
 }
 
+function changeLine(c) {
+  if (!c) return null;
+  const when = new Date(c.previous_at).toLocaleString("fa-IR", { dateStyle: "medium", timeStyle: "short" });
+  const delta = c.overall_change > 0 ? `+${fa(c.overall_change)}` : c.overall_change < 0 ? `−${fa(-c.overall_change)}` : "بدون تغییر";
+  const flips = c.regressions.length + c.improvements.length;
+  const why = !flips ? "نتیجه‌ی هیچ آزمون مشترکی عوض نشد."
+    : `${fa(c.improvements.length)} آزمون درست شد و ${fa(c.regressions.length)} آزمون خراب شد. ` +
+      (c.significant ? "این تغییر بیشتر از آن است که از شانس باشد." : "با این تعداد آزمون، این تغییر ممکن است تصادفی باشد.");
+  return h("p", { class: "change" }, h("b", { text: `نسبت به سنجش قبلی شما (${when}): نمره‌ی کل ${delta}. ` }), why,
+    c.new_critical.length ? h("span", { class: "bad", text: ` ${fa(c.new_critical.length)} شکست بحرانی تازه!` }) : null);
+}
+
 function showResult(final, levels) {
   const s = final.summary;
   state.last = s;
   const url = reportLink(final.report);
   const brand = val("#brand");
-  const side = h("div", { class: "fact" }, h("small", { text: "سنجش سریع · سطح‌های آزموده‌شده" }),
-    h("strong", { text: levelLine(s) }),
-    h("small", { text: "سقف سطح فقط در سنجش کامل پنج‌سطحی معنا دارد." }));
-  const box = $("#result");
-  box.replaceChildren(resultCard(s, side, insight(s, levels), [
+  const complete = Object.keys(s.levels).length === Object.keys(levels).length;
+  const side = complete
+    ? h("div", { class: "fact" }, h("small", { text: "هر پنج سطح آزموده شد" }),
+      h("strong", { text: s.ceiling ? `سقف سطح ${fa(s.ceiling)} از ۵` : "زیر سطح ۱" }), belt(s.ceiling, levels))
+    : h("div", { class: "fact" }, h("small", { text: "سنجش سریع · سطح‌های آزموده‌شده" }), h("strong", { text: levelLine(s) }),
+      h("small", { text: "برای سقف سطح، متن سؤال‌های متداول را هم بدهید." }));
+  const card = resultCard(s, side, insight(s, levels), [
     h("a", { class: "btn primary", href: url, target: "_blank", rel: "noopener", text: "کارنامه‌ی کامل" }),
     h("a", { class: "btn", href: url, download: `mahak-${brand || "chatbot"}.html`, text: "دانلود کارنامه" }),
     h("a", { class: "btn ghost", href: "#full", text: "سنجش کامل پنج‌سطحی" }),
-  ]));
+  ]);
+  const change = changeLine(final.change);
+  if (change) card.insertBefore(change, $(".actions", card));
+  const box = $("#result");
+  box.replaceChildren(card);
   box.hidden = false;
   box.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
@@ -195,7 +269,8 @@ async function runCheck() {
   state.running = true;
   $("#run").disabled = true;
   $("#result").hidden = true;
-  const { tests, levels } = setup();
+  const { levels } = setup();
+  const { tests } = JSON.parse(py.custom_plan(JSON.stringify(approved())));
   board = board || new Board($("#board"), levels);
   board.reset(tests);
   let failedInARow = 0;
@@ -238,7 +313,20 @@ async function runCheck() {
         return;
       }
     }
-    showResult(JSON.parse(py.finish()), levels);
+    const memory = "mahak-last:" + (state.spec.base_url || state.spec.url) + "|" + val("#brand");
+    let previous = "";
+    try {
+      previous = localStorage.getItem(memory) || "";
+    } catch (err) {
+      /* no storage: no comparison */
+    }
+    const final = JSON.parse(py.finish(previous));
+    try {
+      localStorage.setItem(memory, JSON.stringify(final.compact));  // scores and pass/fail only: no key, no answers
+    } catch (err) {
+      /* no storage */
+    }
+    showResult(final, levels);
   } catch (err) {
     console.error(err);
     board.note("سنجش متوقف شد: " + err.message);
@@ -305,7 +393,15 @@ for (const r of $$('input[name="kind"]')) {
   });
 }
 $$("#connect input, #connect textarea").forEach((el) => el.addEventListener("input", onConnectionEdited));
-$("#brand").addEventListener("input", () => $("#brand").setCustomValidity(""));
+$("#brand").addEventListener("input", () => { $("#brand").setCustomValidity(""); scheduleMake(); });
+$("#knowledge").addEventListener("input", scheduleMake);
+$("#make").addEventListener("click", () => state.connected && setup());
+$$("[data-sample]").forEach((b) => b.addEventListener("click", () => {
+  if (!py) return;
+  $("#knowledge").value = py.sample_faq(b.dataset.sample);
+  if (!val("#brand")) $("#brand").value = b.dataset.sample === "bank" ? "مثال‌بانک" : "مثال‌کالا";
+  if (state.connected) setup();
+}));
 $("#test-conn").addEventListener("click", testConnection);
 $("#run").addEventListener("click", runCheck);
 $("#full-cta").addEventListener("click", (e) => (e.currentTarget.href = fullRequest()));
