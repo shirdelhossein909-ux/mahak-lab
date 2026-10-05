@@ -162,9 +162,14 @@ async function fillReports() {
       h("b", { text: title }), h("span", { class: "big", text: s ? `${fa(Math.round(s.overall))} از ۱۰۰` : "—" }),
       h("small", { text: s ? `${fa(s.passed)} از ${fa(s.tests)} قبول · شکست بحرانی: ${s.critical_failures ? fa(s.critical_failures) : "هیچ"}` : "" }));
   };
-  box.replaceChildren(...[["demo", "shop"], ["demo-bank", "bank"]].map(([prefix, domain]) => h("div", { class: "report-group" },
-    h("h3", { text: DOMAIN_NAMES[domain] }),
-    h("div", { class: "reports" }, card(`${prefix}-careless`, "چت‌بات بی‌دقت"), card(`${prefix}-careful`, "چت‌بات محتاط"),
+  const groups = [
+    ["demo", DOMAIN_NAMES.shop, ["careless", "چت‌بات بی‌دقت"], ["careful", "چت‌بات محتاط"]],
+    ["demo-bank", DOMAIN_NAMES.bank, ["careless", "چت‌بات بی‌دقت"], ["careful", "چت‌بات محتاط"]],
+    ["deepseek", "چت‌بات واقعی با DeepSeek", ["weak", "پرامپت یک‌خطی"], ["strong", "پرامپت دقیق با سؤال‌های متداول"]],
+  ].filter(([prefix, , [a]]) => prefix.startsWith("demo") || ex[`${prefix}-${a}`]);  // a real-model group only once it has run
+  box.replaceChildren(...groups.map(([prefix, name, [a, aName], [b, bName]]) => h("div", { class: "report-group" },
+    h("h3", { text: name }),
+    h("div", { class: "reports" }, card(`${prefix}-${a}`, aName), card(`${prefix}-${b}`, bName),
       h("a", { class: "rcard sheet", href: `examples/${prefix}-compare.html`, target: "_blank", rel: "noopener" },
         h("b", { text: "مقایسه‌ی دو چت‌بات" }), h("span", { class: "big", text: "کنار هم" }),
         h("small", { text: "سطح‌ها و محورها، و آزمون‌هایی که نتیجه‌شان فرق داشت" }))))));
