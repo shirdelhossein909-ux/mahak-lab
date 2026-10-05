@@ -72,9 +72,9 @@ function showResult() {
       h("tbody", {},
         h("tr", {}, h("th", { text: "داور: قبول" }), h("td", { class: "good", text: fa(t.both_pass) }), h("td", { class: "bad", text: fa(t.judge_only) })),
         h("tr", {}, h("th", { text: "داور: رد" }), h("td", { class: "bad", text: fa(t.human_only) }), h("td", { class: "good", text: fa(t.both_fail) })))),
-    h("p", { class: "insight", text: a.n < 20
-      ? "با کمتر از ۲۰ جواب، این عددها هنوز خیلی قطعی نیستند. هر چه بیشتر داوری کنید، تصویر دقیق‌تر می‌شود."
-      : "کاپا یعنی هم‌نظری بیش از آنچه شانس می‌دهد: ۱ یعنی کاملاً هم‌نظر و ۰ یعنی در حد شانس. جواب‌هایی که هم‌نظر نبودید، همان جاهایی است که قانون‌های داور باید بهتر شوند." }),
+    h("p", { class: "insight", text: a.n < ITEMS.length
+      ? `هنوز ${fa(ITEMS.length - a.n)} جواب را داوری نکرده‌اید. هر چه بیشتر داوری کنید، نتیجه دقیق‌تر می‌شود.`
+      : "کاپا یعنی هم‌نظری بیش از آنچه شانس می‌دهد: ۱ یعنی کاملاً هم‌نظر و ۰ یعنی در حد شانس. با این تعداد جواب، عدد فقط یک نشانه است؛ مهم‌تر جواب‌هایی است که هم‌نظر نبودید، چون همان‌جاها قانون‌های داور باید بهتر شوند." }),
     h("div", { class: "actions" }, download,
       h("button", { class: "btn ghost", type: "button", text: "ادامه‌ی داوری", onclick: resume }),
       h("button", { class: "btn ghost", type: "button", text: "از اول", onclick: restart }))),
