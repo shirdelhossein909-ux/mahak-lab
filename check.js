@@ -3,7 +3,7 @@
 // carries the requests with fetch, straight from the visitor's browser to their chatbot.
 import {
   $, $$, Board, ENGINE_ERROR, belt, bootEngine, bubble, fa, h, insight, keepBottom, mailto,
-  reportLink, resultCard, setEngine, setupTheme, showEmails, typing, verdictCard,
+  reportLink, resultCard, setEngine, setupTheme, setupTips, showEmails, typing, verdictCard,
 } from "./common.js";
 
 const TIMEOUT_MS = 60000;
@@ -384,6 +384,7 @@ function fullRequest() {
 }
 
 setupTheme();
+setupTips();
 showEmails();
 $$(".origin").forEach((el) => (el.textContent = location.origin));
 for (const r of $$('input[name="kind"]')) {

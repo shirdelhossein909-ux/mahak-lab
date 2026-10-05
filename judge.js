@@ -1,6 +1,6 @@
 // «داور را داوری کن»: a person labels answers; Mahak's agreement module (in Python) compares
 // those labels with the judge's verdicts, which stay in Python until the person asks for the result.
-import { $, ENGINE_ERROR, bootEngine, bubble, fa, fill, h, pct, setEngine, setupTheme, showEmails } from "./common.js";
+import { $, ENGINE_ERROR, bootEngine, bubble, fa, fill, h, pct, setEngine, setupTheme, setupTips, showEmails } from "./common.js";
 
 const STORE = "mahak-labels-v1";
 let py = null;
@@ -102,6 +102,7 @@ function restart() {
 }
 
 setupTheme();
+setupTips();
 showEmails();
 $("#say-yes").addEventListener("click", () => answer(true));
 $("#say-no").addEventListener("click", () => answer(false));

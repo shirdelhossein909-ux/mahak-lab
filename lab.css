@@ -53,7 +53,21 @@ bdi{unicode-bidi:isolate}
 .theme .sun{display:none}
 :root[data-theme="dark"] .theme .sun{display:block}:root[data-theme="dark"] .theme .moon{display:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .theme .sun{display:block}:root:not([data-theme="light"]) .theme .moon{display:none}}
-@media (max-width:640px){.top nav a:not(.nav-cta){display:none}.top nav a.nav-cta{padding:2px 12px;font-size:.84rem}}
+@media (max-width:640px){.top nav a:not(.nav-cta),.top nav .tipper:not(.cta){display:none}.top nav a.nav-cta{padding:2px 12px;font-size:.84rem}}
+
+/* plain-words tips under the top-bar links (common.js: setupTips); hover on a mouse, or keyboard focus */
+.tipper{position:relative;display:inline-flex}
+.tip,.tipper::after{visibility:hidden;opacity:0;pointer-events:none;transition:opacity .12s ease,visibility 0s linear .12s}
+.tip{position:absolute;top:100%;left:50%;z-index:6;padding-top:10px;width:max-content;max-width:min(250px,calc(100vw - 16px));
+  transform:translateX(calc(-50% + var(--shift,0px)))}
+.tip>span{display:block;background:var(--ink);color:var(--paper);border-radius:8px;padding:8px 12px;box-shadow:var(--shadow);
+  font-size:.84rem;font-weight:400;line-height:1.85;text-align:start;white-space:normal}
+.tipper::after{content:"";position:absolute;top:calc(100% + 5px);left:50%;width:10px;height:10px;background:var(--ink);transform:translateX(-50%) rotate(45deg)}
+@media (hover:hover) and (pointer:fine){
+  .tipper:hover .tip,.tipper:hover::after{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .15s ease .25s,visibility 0s linear .25s}
+}
+.tipper:has(a:focus-visible) .tip,.tipper:has(a:focus-visible)::after{visibility:visible;opacity:1;transition:opacity .15s ease}
+.tipper.quiet .tip,.tipper.quiet::after{visibility:hidden;opacity:0;pointer-events:none;transition:none}
 
 /* hero */
 .hero{padding-block:56px 30px;display:grid;gap:18px}

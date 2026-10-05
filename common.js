@@ -1,4 +1,4 @@
-// Shared by both pages of the lab: small DOM helpers, the theme switch, the Python engine,
+// Shared by the lab's pages: small DOM helpers, the theme switch, the top-bar tips, the Python engine,
 // chat bubbles, the open judge's verdict card and the live test board.
 // All judging happens in Python (web/bridge.py); this file only shows it.
 
@@ -49,6 +49,38 @@ export function setupTheme() {
       /* private mode: the choice lasts until the page closes */
     }
     label();
+  });
+}
+
+// ------------------------------------------------------------------ top-bar tips
+
+/** Under each top-bar link with data-tip, a few plain lines on what is there; on mouse hover or keyboard focus. */
+export function setupTips() {
+  const holders = [];
+  $$(".top nav a[data-tip]").forEach((link, i) => {
+    const box = h("span", { text: link.dataset.tip });
+    const tip = h("span", { class: "tip", role: "tooltip", id: `tip-${i + 1}` }, box);
+    const holder = h("span", { class: link.classList.contains("nav-cta") ? "tipper cta" : "tipper" });
+    link.replaceWith(holder);
+    holder.append(link, tip);
+    link.setAttribute("aria-describedby", tip.id);
+    // keep the box inside the window; the little arrow stays under the link
+    const place = () => {
+      holder.style.setProperty("--shift", "0px");
+      const r = box.getBoundingClientRect();
+      const width = document.documentElement.clientWidth;
+      holder.style.setProperty("--shift", `${Math.max(8 - r.left, 0) + Math.min(width - 8 - r.right, 0)}px`);
+    };
+    const wake = () => holder.classList.remove("quiet");
+    holder.addEventListener("mouseenter", place);
+    holder.addEventListener("mouseleave", wake);
+    link.addEventListener("focus", place);
+    link.addEventListener("blur", wake);
+    holders.push(holder);
+  });
+  // Escape closes an open tip without moving the mouse or the focus
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") holders.forEach((t) => t.classList.add("quiet"));
   });
 }
 

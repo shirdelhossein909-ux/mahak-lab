@@ -2,7 +2,7 @@
 // and the saved report cards.
 import {
   $, $$, Board, ENGINE_ERROR, REDUCED, belt, bootEngine, bubble, fa, h, insight, keepBottom,
-  reportLink, resultCard, setEngine, setupTheme, showEmails, sleep, typing, verdictCard,
+  reportLink, resultCard, setEngine, setupTheme, setupTips, showEmails, sleep, typing, verdictCard,
 } from "./common.js";
 
 const BOT_NAMES = { careless: "چت‌بات بی‌دقت", careful: "چت‌بات محتاط" };
@@ -173,6 +173,7 @@ async function fillReports() {
 // ------------------------------------------------------------------ start
 
 setupTheme();
+setupTips();
 showEmails();
 setupPlay();
 fillReports();
