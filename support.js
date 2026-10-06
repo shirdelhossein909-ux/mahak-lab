@@ -34,10 +34,11 @@ function show() {
   keepBottom(log);
 }
 
-function failed() {
+function failed(reason) {
   return h("div", { class: "bubble bot err" },
     "جواب نیامد. چند لحظه بعد دوباره بفرستید؛ اگر باز هم نشد، به ",
-    h("a", { href: "mailto:" + contactEmail(), dir: "ltr", text: contactEmail() }), " بنویسید.");
+    h("a", { href: "mailto:" + contactEmail(), dir: "ltr", text: contactEmail() }), " بنویسید.",
+    reason && h("small", { class: "sup-why", text: "علت: " + reason }));
 }
 
 async function ask(text) {
@@ -57,8 +58,8 @@ async function ask(text) {
       body: JSON.stringify({ model: "mahak-support", messages: history }),
     });
     const data = await r.json().catch(() => ({}));
-    const answer = r.ok && data.choices && data.choices[0].message.content;
-    if (!answer) throw new Error((data.error && data.error.message) || "HTTP " + r.status);
+    const answer = r.ok && data.choices?.[0]?.message?.content;
+    if (!answer) throw new Error((data.error && data.error.message) || "سرور پشتیبانی جواب درستی نداد (" + r.status + ")");
     history.push({ role: "assistant", content: answer });
     save();
     wait.replaceWith(bubble({ role: "assistant", content: answer }));
@@ -66,7 +67,8 @@ async function ask(text) {
     console.error("support:", err);
     history.pop(); // the question can simply be sent again
     save();
-    wait.replaceWith(failed());
+    // fetch itself failing means the bot's server could not be reached at all (offline, filtered, or down)
+    wait.replaceWith(failed(err instanceof TypeError ? "به سرور پشتیبانی وصل نشد (اینترنت، فیلترینگ یا خاموش بودن سرور)." : err.message));
   } finally {
     go.disabled = false;
     keepBottom(log);
