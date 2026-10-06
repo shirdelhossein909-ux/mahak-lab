@@ -312,3 +312,32 @@ footer .en{direction:ltr;text-align:left;font-family:system-ui,sans-serif}
   .feed{max-height:520px;padding:10px}
   .bubble{max-width:94%}
 }
+
+/* support chat: a round button in the corner opens a small chat panel above it (support.js) */
+.sup-fab{position:fixed;inset-inline-end:20px;bottom:20px;z-index:20;width:56px;height:56px;border-radius:50%;border:0;padding:0;
+  display:grid;place-items:center;background:var(--pen);color:var(--pen-ink);cursor:pointer;
+  box-shadow:0 12px 26px -10px color-mix(in srgb,var(--pen) 75%,transparent);transition:transform .15s}
+.sup-fab:hover{transform:scale(1.06)}
+.sup-fab:focus-visible{outline:2.5px solid var(--ink);outline-offset:3px}
+.sup-fab svg{width:27px;height:27px;fill:currentColor}.sup-fab svg circle{fill:var(--pen)}
+.sup-panel{position:fixed;inset-inline-end:20px;bottom:88px;z-index:20;width:min(380px,calc(100vw - 32px));height:min(540px,calc(100vh - 120px));
+  flex-direction:column;overflow:hidden;border-radius:14px;box-shadow:0 24px 50px -24px rgba(0,0,0,.45);animation:pop .18s ease-out}
+.sup-panel:not([hidden]){display:flex}
+.sup-panel>header{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--rule)}
+.sup-panel>header div{flex:1;min-width:0}
+.sup-panel>header b{display:block;font-size:.98rem}
+.sup-panel>header small{display:block;color:var(--muted);font-size:.76rem;line-height:1.5}
+.sup-dot{width:10px;height:10px;border-radius:50%;background:var(--up);flex:none}
+.sup-icon{width:32px;height:32px;flex:none;border-radius:8px;border:1px solid var(--rule);background:transparent;color:var(--ink-2);cursor:pointer;font:inherit;font-size:1.1rem;line-height:1}
+.sup-icon:hover{border-color:var(--pen);color:var(--pen)}
+.sup-log{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.sup-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 8px}
+.sup-chips .chip{font-size:.8rem;min-height:30px;padding:2px 12px}
+.sup-form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--rule)}
+.sup-form input{flex:1;min-width:0;font:inherit;font-size:.95rem;padding:7px 12px;border:1.5px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+.sup-form input:focus-visible{outline:2.5px solid var(--pen);outline-offset:1px}
+.sup-form .btn{padding:6px 16px}
+@media (max-width:640px){
+  .sup-fab{inset-inline-end:14px;bottom:14px;width:52px;height:52px}
+  .sup-panel{inset-inline:8px;width:auto;bottom:76px;height:min(72vh,calc(100vh - 96px))}
+}

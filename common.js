@@ -1,6 +1,6 @@
 // Shared by the lab's pages: small DOM helpers, the theme switch, the top-bar tips, the Python engine,
 // chat bubbles, the open judge's verdict card and the live test board.
-// All judging happens in Python (web/bridge.py); this file only shows it.
+// All judging happens in Python (سایت/bridge.py); this file only shows it.
 
 export const $ = (sel, el = document) => el.querySelector(sel);
 export const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];

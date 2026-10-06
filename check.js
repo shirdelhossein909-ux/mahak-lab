@@ -1,5 +1,5 @@
 // «چت‌باتت را محک بزن»: Mahak tests the visitor's own chatbot through its API.
-// Python (web/bridge.py) builds every request and judges every answer; this file only
+// Python (سایت/bridge.py) builds every request and judges every answer; this file only
 // carries the requests with fetch, straight from the visitor's browser to their chatbot.
 import {
   $, $$, Board, ENGINE_ERROR, belt, bootEngine, bubble, fa, h, insight, keepBottom, mailto,
